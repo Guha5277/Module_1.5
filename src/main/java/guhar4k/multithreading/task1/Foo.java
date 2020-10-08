@@ -1,4 +1,4 @@
-package guhar4k.multithreading;
+package guhar4k.multithreading.task1;
 
 public class Foo {
     private boolean isFirstCompleted;
