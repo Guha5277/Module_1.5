@@ -1,6 +1,8 @@
 package guhar4k.multithreading.task2;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Phaser;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FizzBuzz {
@@ -10,6 +12,7 @@ public class FizzBuzz {
     private CountDownLatch fizzOrBuzzCd;
     private CountDownLatch numberCd;
     private CountDownLatch allTaskDoneCd;
+    private Phaser phaser;
 
     public FizzBuzz(int num) {
         this.num = num;
@@ -18,6 +21,7 @@ public class FizzBuzz {
         fizzOrBuzzCd = new CountDownLatch(1);
         numberCd = new CountDownLatch(2);
         allTaskDoneCd = new CountDownLatch(1);
+        phaser = new Phaser(5);
     }
 
     public void fizz() {
@@ -31,6 +35,7 @@ public class FizzBuzz {
             isCurrentNumberPrinted.set(true);
         }
         numberCd.countDown();
+        phaser.arriveAndAwaitAdvance();
     }
 
     public void buzz() {
@@ -44,6 +49,7 @@ public class FizzBuzz {
             isCurrentNumberPrinted.set(true);
         }
         numberCd.countDown();
+        phaser.arriveAndAwaitAdvance();
     }
 
     public void fizzBuzz() {
@@ -52,6 +58,7 @@ public class FizzBuzz {
             isCurrentNumberPrinted.set(true);
         }
         fizzOrBuzzCd.countDown();
+        phaser.arriveAndAwaitAdvance();
     }
 
     public void number() {
@@ -62,6 +69,7 @@ public class FizzBuzz {
         }
         if (!isCurrentNumberPrinted.get()) System.out.print(currentNum);
         allTaskDoneCd.countDown();
+        phaser.arriveAndAwaitAdvance();
     }
 
     public boolean nextNum() {
@@ -77,8 +85,10 @@ public class FizzBuzz {
             fizzOrBuzzCd = new CountDownLatch(1);
             numberCd = new CountDownLatch(2);
             allTaskDoneCd = new CountDownLatch(1);
+            phaser.arrive();
             return true;
         }
+        phaser.forceTermination();
         return false;
     }
 }
